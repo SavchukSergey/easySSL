@@ -3,16 +3,10 @@ using EasySsl.Extensions;
 
 namespace EasySsl {
     class Program {
-        private static X509Certificate ca;
-
         private static X509Certificate GenerateCaCertificate() {
             var cert = new X509Certificate {
                 Tbs = {
                     SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa,
-                    Issuer = new X509Name {
-                        CommonName = "Sergey CA",
-                        Organization = "My Ca"
-                    },
                     Validity = new X509Validity {
                         NotBefore = DateTimeOffset.UtcNow,
                         NotAfter = DateTimeOffset.UtcNow.AddDays(5)
@@ -21,11 +15,11 @@ namespace EasySsl {
                         CommonName = "Sergey CA",
                         Organization = "My Ca"
                     }
-                },
-                SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa
+                }
             }
             .GenerateRsaKey()
             .GenerateSerialNumber()
+            .SetIssuerSelf()
             .SetBasicConstraint(new BasicConstraintData {
                 Authority = true,
                 PathLengthConstraint = 3
@@ -35,7 +29,7 @@ namespace EasySsl {
             return cert;
         }
 
-        private static X509Certificate GenerateEndCertificate() {
+        private static X509Certificate GenerateEndCertificate(X509Certificate ca) {
             var cert = new X509Certificate {
                 Tbs = {
                     SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa,
@@ -47,8 +41,7 @@ namespace EasySsl {
                         CommonName = "test.vcap.me",
                         Organization = "Home"
                     }
-                },
-                SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa
+                }
             }
             .SetIssuer(ca)
             .GenerateRsaKey()
@@ -60,10 +53,10 @@ namespace EasySsl {
         }
 
         static void Main() {
-            ca = GenerateCaCertificate();
+            var ca = GenerateCaCertificate();
             ca.Export(@"d:\temp\ca.cer", true);
 
-            var end = GenerateEndCertificate();
+            var end = GenerateEndCertificate(ca);
             end.Export(@"d:\temp\end.cer", true);
 
             Console.WriteLine("certs generated");

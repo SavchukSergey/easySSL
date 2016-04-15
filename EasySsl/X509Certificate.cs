@@ -106,9 +106,11 @@ namespace EasySsl {
 
         public X509Certificate SetIssuer(X509Certificate authority) {
             Tbs.Issuer = authority.Tbs.Subject;
-            var id = authority.Tbs.Extensions.GetSubjectKeyIdentifier();
-            Tbs.Extensions.SetAuthorityKeyIdentifier(id);
             return this;
+        }
+
+        public X509Certificate SetIssuerSelf() {
+            return SetIssuer(this);
         }
 
         public X509Certificate SetBasicConstraint(BasicConstraintData data) {
