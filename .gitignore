@@ -1,0 +1,11 @@
+/*.suo
+/EasySsl/bin/
+/EasySsl/obj/
+/EasySsl.Tests/bin/
+/EasySsl.Tests/obj/
+
+/EasySsl.sln.DotSettings.user
+/_ReSharper.Caches
+/.vs/EasySsl/v14/.suo
+/packages/*/
+/.vs/SslTools/v14/*.suo
