@@ -30,7 +30,7 @@ private static X509Certificate GenerateCaCertificate() {
 }
 ```
 
-## Generating end certificate
+## Generating end certificate signed with CA certificate
 
 ```c#
 private static X509Certificate GenerateEndCertificate(X509Certificate ca) {
@@ -55,4 +55,54 @@ private static X509Certificate GenerateEndCertificate(X509Certificate ca) {
 
     return cert;
 }
+```
+
+## Generating self-signed certificate
+
+```c#
+private static X509Certificate GenerateSelfSignedCertificate(X509Certificate ca) {
+    var cert = new X509Certificate {
+        Tbs = {
+            SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa,
+            Validity = new X509Validity {
+                NotBefore = DateTimeOffset.UtcNow,
+                NotAfter = DateTimeOffset.UtcNow.AddDays(5)
+            },
+            Subject = new X509Name {
+                CommonName = "test.vcap.me",
+                Organization = "Home"
+            }
+        }
+    }
+    .SetIssuer(ca)
+    .GenerateRsaKey()
+    .GenerateSerialNumber()
+    .AddSubjectAltNames("test2.vcap.me")
+    .SignSelf(ca);
+
+    return cert;
+}
+```
+
+## Export certificate
+ 
+ ```c#   
+    new X509Certificate {
+        Tbs = {
+            SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa,
+            Validity = new X509Validity {
+                NotBefore = DateTimeOffset.UtcNow,
+                NotAfter = DateTimeOffset.UtcNow.AddDays(5)
+            },
+            Subject = new X509Name {
+                CommonName = "test.vcap.me",
+                Organization = "Home"
+            }
+        }
+    }
+    .SetIssuer(ca)
+    .GenerateRsaKey()
+    .GenerateSerialNumber()
+    .SignSelf()
+    .Export(filePath, true);
 ```
