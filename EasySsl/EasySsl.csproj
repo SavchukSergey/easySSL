@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Asn1, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Asn1.1.0.2\lib\net45\Asn1.dll</HintPath>
+      <HintPath>..\packages\Asn1.1.0.3\lib\net45\Asn1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -32,7 +32,7 @@ namespace EasySsl {
         }
 
         public static X509AlgorithmIdentifier RsaEncryption => new X509AlgorithmIdentifier(Asn1ObjectIdentifier.RsaEncryption);
-        public static X509AlgorithmIdentifier Sha256Rsa => new X509AlgorithmIdentifier(new Asn1ObjectIdentifier("1.2.840.113549.1.1.11"));
+        public static X509AlgorithmIdentifier Sha256Rsa => new X509AlgorithmIdentifier(Asn1ObjectIdentifier.Sha256WithRsaEncryption);
 
         public override string ToString() {
             if (Parameters == null || Parameters.Is(Asn1UniversalNodeType.Null)) return $"{Id}";
