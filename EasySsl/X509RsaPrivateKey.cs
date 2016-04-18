@@ -26,7 +26,7 @@ namespace EasySsl {
             P = GetRsaData((Asn1Integer)value.Nodes[4]);
             Q = GetRsaData((Asn1Integer)value.Nodes[5]);
             DP = GetRsaData((Asn1Integer)value.Nodes[6]);
-            DP = GetRsaData((Asn1Integer)value.Nodes[7]);
+            DQ = GetRsaData((Asn1Integer)value.Nodes[7]);
             InverseQ = GetRsaData((Asn1Integer)value.Nodes[8]);
         }
 

@@ -35,7 +35,20 @@ namespace EasySsl {
             set { Set(Asn1ObjectIdentifier.OrganizationalUnitName, value); }
         }
 
-        public string Country { get; set; }
+        public string CountryName {
+            get { return Get(Asn1ObjectIdentifier.CountryName); }
+            set { Set(Asn1ObjectIdentifier.CountryName, value); }
+        }
+
+        public string LocalityName {
+            get { return Get(Asn1ObjectIdentifier.LocalityName); }
+            set { Set(Asn1ObjectIdentifier.LocalityName, value); }
+        }
+
+        public string StreetAddress {
+            get { return Get(Asn1ObjectIdentifier.StreetAddress); }
+            set { Set(Asn1ObjectIdentifier.StreetAddress, value); }
+        }
 
         private string Get(Asn1ObjectIdentifier id) {
             var item = _items.FirstOrDefault(i => i.Id == id);

@@ -54,10 +54,10 @@ namespace EasySsl {
 
         static void Main() {
             var ca = GenerateCaCertificate();
-            ca.Export(@"d:\temp\ca.cer", true);
+            ca.Export(@"d:\temp\ca.pfx", true);
 
             var end = GenerateEndCertificate(ca);
-            end.Export(@"d:\temp\end.cer", true);
+            end.Export(@"d:\temp\end.pfx", true);
 
             Console.WriteLine("certs generated");
             Console.ReadKey();
