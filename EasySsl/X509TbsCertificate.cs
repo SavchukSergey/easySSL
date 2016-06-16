@@ -32,7 +32,7 @@ namespace EasySsl {
             Subject = new X509Name((Asn1Sequence)subnode);
             subnode = node.Nodes[i++];
 
-            PublicKey = X509PublicKey.From((Asn1Sequence)subnode);
+            SubjectPublicKeyInfo = SubjectPublicKeyInfo.From((Asn1Sequence)subnode);
             subnode = node.Nodes[i++];
 
             if (subnode.Is(Asn1TagClass.ContextDefined, 0x01)) {
@@ -68,7 +68,9 @@ namespace EasySsl {
 
         public Asn1BitString UniqueIdentifier { get; set; }
 
-        public X509PublicKey PublicKey { get; set; }
+        public SubjectPublicKeyInfo SubjectPublicKeyInfo { get; set; }
+
+        //public X509PublicKey PublicKey { get; set; }
 
         public AsymmetricAlgorithm PrivateKey { get; set; }
 
@@ -83,7 +85,7 @@ namespace EasySsl {
                     Issuer.ToAsn1(),
                     Validity.ToAsn1(),
                     Subject.ToAsn1(),
-                    PublicKey.ToAsn1()
+                    SubjectPublicKeyInfo.ToAsn1()
                 }
             };
             if (Extensions.Count > 0) {

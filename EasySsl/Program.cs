@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text;
+using Asn1.Utils;
 using EasySsl.Extensions;
 
 namespace EasySsl {
@@ -52,12 +55,36 @@ namespace EasySsl {
             return cert;
         }
 
-        static void Main() {
+        public static void Main() {
+            var inputBuffer = new byte[1024];
+            var inputStream = Console.OpenStandardInput(inputBuffer.Length);
+            Console.SetIn(new StreamReader(inputStream, Console.InputEncoding, false, inputBuffer.Length));
+
+            //var key = new RsaPrivateKey(2048);
+            //var publicKey = key.CreatePublicKey();
+            //var pem = publicKey.GetSubjectPublicKeyInfo().ToPem();
+            //Console.WriteLine(pem);
+            //Console.ReadKey();
+
+            //var privatePem = key.GetPrivateKeyInfo().ToPem();
+            //Console.WriteLine(privatePem);
+            //Console.ReadKey();
+
+            //for (var i = 0; i < 3; i++) {
+            //    var line1 = Console.ReadLine();
+            //    var data1 = Encoding.UTF8.GetBytes(line1);
+            //    var signature = key.SignData(data1);
+            //    Console.WriteLine(signature.GetHexString());
+            //}
+            //Console.ReadKey();
+
+
+
             var ca = GenerateCaCertificate();
-            ca.Export(@"d:\temp\ca.pfx", true);
+            ca.Export(@"d:\temp\ca.pfx", false);
 
             var end = GenerateEndCertificate(ca);
-            end.Export(@"d:\temp\end.pfx", true);
+            end.Export(@"d:\temp\end.pfx", false);
 
             Console.WriteLine("certs generated");
             Console.ReadKey();

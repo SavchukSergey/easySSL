@@ -68,9 +68,9 @@ namespace EasySsl {
         }
 
         public X509Certificate GenerateRsaKey(int keySize = 2048) {
-            var privateKey = new X509RsaPrivateKey(2048);
+            var privateKey = new RsaPrivateKey(2048);
             var publicKey = privateKey.CreatePublicKey();
-            Tbs.PublicKey = publicKey;
+            Tbs.SubjectPublicKeyInfo = publicKey.GetSubjectPublicKeyInfo();
             PrivateKey = privateKey;
             Tbs.Extensions.SetSubjectKeyIdentifier(publicKey.GenerateIdentifier());
             return this;

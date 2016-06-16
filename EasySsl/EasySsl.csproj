@@ -46,12 +46,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\BasicConstraintData.cs" />
+    <Compile Include="PrivateKeyInfo.cs" />
+    <Compile Include="SubjectPublicKeyInfo.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="X509AlgorithmIdentifier.cs" />
     <Compile Include="X509ExtensionsList.cs" />
     <Compile Include="X509PrivateKey.cs" />
     <Compile Include="X509RelativeDistinguishedName.cs" />
-    <Compile Include="X509RsaPrivateKey.cs" />
+    <Compile Include="RsaPrivateKey.cs" />
     <Compile Include="X509TbsCertificate.cs" />
     <Compile Include="X509Version.cs" />
     <Compile Include="X509Extension.cs" />
@@ -60,7 +62,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="X509Certificate.cs" />
     <Compile Include="X509PublicKey.cs" />
-    <Compile Include="X509RsaPublicKey.cs" />
+    <Compile Include="RsaPublicKey.cs" />
     <Compile Include="X509Validity.cs" />
   </ItemGroup>
   <ItemGroup>

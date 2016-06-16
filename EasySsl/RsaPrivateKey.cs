@@ -5,9 +5,9 @@ using Asn1;
 namespace EasySsl {
     //https://www.ietf.org/rfc/rfc2313.txt
 
-    public class X509RsaPrivateKey : X509PrivateKey {
+    public class RsaPrivateKey : X509PrivateKey {
 
-        public X509RsaPrivateKey(RSAParameters parameters) {
+        public RsaPrivateKey(RSAParameters parameters) {
             Exponent = parameters.Exponent;
             Modulus = parameters.Modulus;
             D = parameters.D;
@@ -18,7 +18,7 @@ namespace EasySsl {
             InverseQ = parameters.InverseQ;
         }
 
-        public X509RsaPrivateKey(Asn1BitString valueNode) {
+        public RsaPrivateKey(Asn1BitString valueNode) {
             var value = Asn1Node.ReadNode(valueNode.Data);
             Modulus = GetRsaData((Asn1Integer)value.Nodes[1]);
             Exponent = GetRsaData((Asn1Integer)value.Nodes[2]);
@@ -30,10 +30,10 @@ namespace EasySsl {
             InverseQ = GetRsaData((Asn1Integer)value.Nodes[8]);
         }
 
-        public X509RsaPrivateKey(int keySize) : this(new RSACryptoServiceProvider(keySize).ExportParameters(true)) {
+        public RsaPrivateKey(int keySize) : this(new RSACryptoServiceProvider(keySize).ExportParameters(true)) {
         }
 
-        public X509RsaPrivateKey() {
+        public RsaPrivateKey() {
 
         }
 
@@ -53,8 +53,6 @@ namespace EasySsl {
 
         public byte[] InverseQ { get; set; }
 
-        public override X509AlgorithmIdentifier AlgorithmIdentifier => new X509AlgorithmIdentifier(Asn1ObjectIdentifier.RsaEncryption);
-
         public override AsymmetricAlgorithm CreateAsymmetricAlgorithm() {
             var args = ToRsaParameters();
             var rsa = new RSACryptoServiceProvider();
@@ -70,24 +68,6 @@ namespace EasySsl {
             return res;
         }
 
-        protected override Asn1Node GetAsn1Arguments() {
-            return new Asn1OctetString {
-                Data = new Asn1Sequence {
-                    Nodes = {
-                        new Asn1Integer(0),
-                        GetAsn1Integer(Modulus),
-                        GetAsn1Integer(Exponent),
-                        GetAsn1Integer(D),
-                        GetAsn1Integer(P),
-                        GetAsn1Integer(Q),
-                        GetAsn1Integer(DP),
-                        GetAsn1Integer(DQ),
-                        GetAsn1Integer(InverseQ),
-                    }
-                }.GetBytes()
-            };
-        }
-
         public RSAParameters ToRsaParameters() {
             return new RSAParameters {
                 Modulus = Modulus,
@@ -101,8 +81,27 @@ namespace EasySsl {
             };
         }
 
-        public X509RsaPublicKey CreatePublicKey() {
-            return new X509RsaPublicKey(ToRsaParameters());
+        public RsaPublicKey CreatePublicKey() {
+            return new RsaPublicKey(ToRsaParameters());
+        }
+
+        public override X509AlgorithmIdentifier Algorithm => X509AlgorithmIdentifier.RsaEncryption;
+
+        //https://tools.ietf.org/html/rfc3447#appendix-A.1.2
+        public override Asn1Node ToAsn1() {
+            return new Asn1Sequence {
+                Nodes = {
+                    new Asn1Integer(0),
+                    GetAsn1Integer(Modulus),
+                    GetAsn1Integer(Exponent),
+                    GetAsn1Integer(D),
+                    GetAsn1Integer(P),
+                    GetAsn1Integer(Q),
+                    GetAsn1Integer(DP),
+                    GetAsn1Integer(DQ),
+                    GetAsn1Integer(InverseQ),
+                }
+            };
         }
 
         private static Asn1Integer GetAsn1Integer(byte[] data) {
@@ -119,5 +118,9 @@ namespace EasySsl {
             }
             return node.Value;
         }
+
+
+        protected override string PemName => "RSA PRIVATE KEY";
+
     }
 }
