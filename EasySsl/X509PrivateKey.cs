@@ -35,6 +35,8 @@ namespace EasySsl {
 
         public abstract Asn1Node ToAsn1();
 
+        public abstract byte[] ToPvk();
+
         public PrivateKeyInfo GetPrivateKeyInfo() {
             return new PrivateKeyInfo {
                 PrivateKeyAlgorithmIdentifier = X509AlgorithmIdentifier.RsaEncryption,

@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\BasicConstraintData.cs" />
+    <Compile Include="PrivateKeyFile.cs" />
+    <Compile Include="RsaPrivateKeyBlob.cs" />
     <Compile Include="PrivateKeyInfo.cs" />
     <Compile Include="SubjectPublicKeyInfo.cs" />
     <Compile Include="Utils\StringUtils.cs" />

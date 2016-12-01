@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using Asn1;
 using EasySsl.Extensions;
 
@@ -68,7 +69,7 @@ namespace EasySsl {
         }
 
         public X509Certificate GenerateRsaKey(int keySize = 2048) {
-            var privateKey = new RsaPrivateKey(2048);
+            var privateKey = new RsaPrivateKey(keySize);
             var publicKey = privateKey.CreatePublicKey();
             Tbs.SubjectPublicKeyInfo = publicKey.GetSubjectPublicKeyInfo();
             PrivateKey = privateKey;
@@ -147,6 +148,18 @@ namespace EasySsl {
                 }
 
                 writer.Flush();
+            }
+        }
+
+        public void ExportPvk(string filePath) {
+            if (PrivateKey == null) {
+                throw new InvalidOperationException("Private Key is not set");
+            }
+
+            var data = PrivateKey.ToPvk();
+            using (var file = File.OpenWrite(filePath)) {
+                file.Write(data, 0, data.Length);
+                file.Flush();
             }
         }
 

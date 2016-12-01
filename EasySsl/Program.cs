@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using Asn1.Utils;
 using EasySsl.Extensions;
@@ -79,9 +80,18 @@ namespace EasySsl {
             //Console.ReadKey();
 
 
+            //var pvk = PrivateKeyFile.Read(@"test.pvk");
+            //var blob = RsaPrivateKeyBlob.Read(pvk.Key);
+            //var para = blob.ToRsaParamaters();
+            //var rsa = new RsaPrivateKey(para);
+            //var signature = rsa.SignData(Encoding.UTF8.GetBytes("test"));
+
+
+
 
             var ca = GenerateCaCertificate();
             ca.Export(@"d:\temp\ca.pfx", false);
+            ca.ExportPvk(@"d:\temp\ca.pvk");
 
             var end = GenerateEndCertificate(ca);
             end.Export(@"d:\temp\end.pfx", false);

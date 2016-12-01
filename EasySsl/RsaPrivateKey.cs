@@ -104,6 +104,18 @@ namespace EasySsl {
             };
         }
 
+        public override byte[] ToPvk() {
+            var blob = new RsaPrivateKeyBlob(ToRsaParameters());
+            var key = blob.ToArray();
+            var pvk = new PrivateKeyFile {
+                KeyType = 2,
+                Encrypted = 0,
+                SaltLen = 0,
+                Key = key
+            };
+            return pvk.ToArray();
+        }
+
         private static Asn1Integer GetAsn1Integer(byte[] data) {
             if ((data[0] & 0x80) == 0) return new Asn1Integer(data);
             return new Asn1Integer(new byte[] { 0 }.Concat(data).ToArray());
