@@ -77,6 +77,7 @@ namespace EasySsl {
         public X509ExtensionsList Extensions { get; } = new X509ExtensionsList();
 
         public Asn1Node ToAsn1() {
+            if (SerialNumber == null) throw new Exception("Serial number is not generated");
             var res = new Asn1Sequence {
                 Nodes = {
                     Version.ToAsn1(),

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CertificationRequestInfo.cs" />
     <Compile Include="Extensions\BasicConstraintData.cs" />
     <Compile Include="PrivateKeyFile.cs" />
     <Compile Include="RsaPrivateKeyBlob.cs" />

@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Asn1;
+using System;
 
 namespace EasySsl {
     public class X509ExtensionsList : List<X509Extension> {
 
         public void SetAuthorityKeyIdentifier(byte[] issuerKeyIdentifier) {
+            if (issuerKeyIdentifier == null) throw new ArgumentNullException(nameof(issuerKeyIdentifier));
+
             Add(new X509Extension {
                 Id = Asn1ObjectIdentifier.AuthorityKeyIdentifier,
                 Value = new Asn1Sequence {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Asn1;
+using System;
 using System.Text;
 
 namespace EasySsl.Utils {
@@ -18,6 +19,10 @@ namespace EasySsl.Utils {
                 data[i / 2] = item;
             }
             return data;
+        }
+
+        public static string GetHexString(this Asn1BitString val) {
+            return val.Data.GetHexString();
         }
 
         public static string GetHexString(this byte[] data) {

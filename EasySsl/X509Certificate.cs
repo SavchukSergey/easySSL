@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Asn1;
 using EasySsl.Extensions;
 
@@ -38,6 +37,7 @@ namespace EasySsl {
         public X509PrivateKey PrivateKey { get; set; }
 
         public Asn1Node ToAsn1() {
+            if (SignatureValue == null) throw new Exception("Certificate is not signed");
             return new Asn1Sequence {
                 Nodes = {
                     Tbs.ToAsn1(),
@@ -74,6 +74,11 @@ namespace EasySsl {
             Tbs.SubjectPublicKeyInfo = publicKey.GetSubjectPublicKeyInfo();
             PrivateKey = privateKey;
             Tbs.Extensions.SetSubjectKeyIdentifier(publicKey.GenerateIdentifier());
+            return this;
+        }
+
+        public X509Certificate SetPrivateKey(X509PrivateKey privateKey) {
+            this.PrivateKey = privateKey;
             return this;
         }
 
@@ -136,7 +141,7 @@ namespace EasySsl {
             return str;
         }
 
-        public void Export(string filePath, bool includePrivate = false) {
+        public X509Certificate Export(string filePath, bool includePrivate = false) {
             using (var writer = new StreamWriter(filePath)) {
                 var pem = ToPem();
                 writer.Write(pem);
@@ -148,6 +153,19 @@ namespace EasySsl {
                 }
 
                 writer.Flush();
+            }
+            return this;
+        }
+
+        public X509Certificate ExportPrivateKey(string filePath) {
+            if (PrivateKey == null) {
+                throw new InvalidOperationException("This certificate doesn't have private key");
+            }
+            var pem = PrivateKey.ToPem();
+            using (var writer = new StreamWriter(filePath)) {
+                writer.Write(pem);
+                writer.Flush();
+                return this;
             }
         }
 

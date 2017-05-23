@@ -1,14 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using Asn1.Utils;
 using EasySsl.Extensions;
 
 namespace EasySsl {
     class Program {
         private static X509Certificate GenerateCaCertificate() {
-            var cert = new X509Certificate {
+            return new X509Certificate {
                 Tbs = {
                     SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa,
                     Validity = new X509Validity {
@@ -16,8 +14,8 @@ namespace EasySsl {
                         NotAfter = DateTimeOffset.UtcNow.AddDays(5)
                     },
                     Subject = new X509Name {
-                        CommonName = "Sergey CA",
-                        Organization = "My Ca"
+                        CommonName = "Root CA",
+                        Organization = "EasySSL"
                     }
                 }
             }
@@ -29,8 +27,19 @@ namespace EasySsl {
                 PathLengthConstraint = 3
             })
             .SignSelf();
+        }
 
-            return cert;
+        private static X509Certificate GenerateIntermediateCertificate(X509Certificate root) {
+            var intermediatePrivateKey = new RsaPrivateKey(2048);
+            var csr = new CertificationRequestInfo {
+                Subject = new X509Name {
+                    CommonName = "Intermediate CA",
+                    Organization = "EasySSL"
+                },
+                SubjectPublicKeyInfo = intermediatePrivateKey.CreatePublicKey().GetSubjectPublicKeyInfo()
+            };
+
+            return Sign(csr, root).SetPrivateKey(intermediatePrivateKey);
         }
 
         private static X509Certificate GenerateEndCertificate(X509Certificate ca) {
@@ -50,26 +59,56 @@ namespace EasySsl {
             .SetIssuer(ca)
             .GenerateRsaKey()
             .GenerateSerialNumber()
-            .AddSubjectAltNames("test2.vcap.me")
+            .AddSubjectAltNames("vcap.me", "*.vcap.me")
             .SignWith(ca);
 
             return cert;
         }
 
+
+
+        private static X509Certificate Sign(CertificationRequestInfo csr, X509Certificate authority) {
+            return new X509Certificate {
+                Tbs = {
+                    SignatureAlgorithm = X509AlgorithmIdentifier.Sha256Rsa,
+                    Validity = new X509Validity {
+                        NotBefore = DateTimeOffset.UtcNow,
+                        NotAfter = DateTimeOffset.UtcNow.AddDays(5)
+                    },
+                    Subject = csr.Subject,
+                    SubjectPublicKeyInfo = csr.SubjectPublicKeyInfo
+                },
+            }.SetIssuer(authority).GenerateSerialNumber().SignWith(authority);
+
+        }
+
         public static void Main() {
+            var root = GenerateCaCertificate().Export("ca.cer").ExportPrivateKey("ca.key");
+            Console.WriteLine($"Root authority has been generated\r\n{Utils.StringUtils.GetHexString(root.SignatureValue)}");
+            Console.ReadKey();
+
+            var intermediateCertificate = GenerateIntermediateCertificate(root).Export("intermediate.cer");
+            Console.WriteLine($"Intermediate authority has been generated\r\n{Utils.StringUtils.GetHexString(intermediateCertificate.SignatureValue)}");
+            Console.ReadKey();
+
+            var endCertificate = GenerateEndCertificate(intermediateCertificate).Export("vcap.me.cer");
+            Console.WriteLine($"End certificate has been generated\r\n{Utils.StringUtils.GetHexString(endCertificate.SignatureValue)}");
+            Console.ReadKey();
+
+
             var inputBuffer = new byte[1024];
             var inputStream = Console.OpenStandardInput(inputBuffer.Length);
             Console.SetIn(new StreamReader(inputStream, Console.InputEncoding, false, inputBuffer.Length));
 
-            //var key = new RsaPrivateKey(2048);
-            //var publicKey = key.CreatePublicKey();
-            //var pem = publicKey.GetSubjectPublicKeyInfo().ToPem();
-            //Console.WriteLine(pem);
-            //Console.ReadKey();
+            var key = new RsaPrivateKey(2048);
+            var publicKey = key.CreatePublicKey();
+            var pem = publicKey.GetSubjectPublicKeyInfo().ToPem();
+            Console.WriteLine(pem);
+            Console.ReadKey();
 
-            //var privatePem = key.GetPrivateKeyInfo().ToPem();
-            //Console.WriteLine(privatePem);
-            //Console.ReadKey();
+            var privatePem = key.GetPrivateKeyInfo().ToPem();
+            Console.WriteLine(privatePem);
+            Console.ReadKey();
 
             //for (var i = 0; i < 3; i++) {
             //    var line1 = Console.ReadLine();
