@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Asn1;
+using System.Text;
 
 namespace EasySsl {
     //https://tools.ietf.org/html/rfc5280#section-4.1.2.4
@@ -70,6 +71,53 @@ namespace EasySsl {
                 res.Nodes.Add(item.ToAsn1());
             }
             return res;
+        }
+
+        public override string ToString() {
+            var sb = new StringBuilder();
+
+            var commonName = CommonName;
+            if (!string.IsNullOrWhiteSpace(commonName)) {
+                sb.Append("CN=");
+                sb.Append(commonName);
+            }
+
+            var organization = Organization;
+            if (!string.IsNullOrWhiteSpace(organization)) {
+                if (sb.Length != 0) sb.Append(',');
+                sb.Append("O=");
+                sb.Append(organization);
+            }
+
+            var organizationUnit = OrganizationalUnit;
+            if (!string.IsNullOrWhiteSpace(organizationUnit)) {
+                if (sb.Length != 0) sb.Append(',');
+                sb.Append("OU=");
+                sb.Append(organizationUnit);
+            }
+
+            var countryName = CountryName;
+            if (!string.IsNullOrWhiteSpace(countryName)) {
+                if (sb.Length != 0) sb.Append(',');
+                sb.Append("C=");
+                sb.Append(countryName);
+            }
+
+            var localityName = LocalityName;
+            if (!string.IsNullOrWhiteSpace(localityName)) {
+                if (sb.Length != 0) sb.Append(',');
+                sb.Append("L=");
+                sb.Append(localityName);
+            }
+
+            var streetAddress = StreetAddress;
+            if (!string.IsNullOrWhiteSpace(streetAddress)) {
+                if (sb.Length != 0) sb.Append(',');
+                sb.Append("STREET=");
+                sb.Append(streetAddress);
+            }
+
+            return sb.ToString();
         }
     }
 }

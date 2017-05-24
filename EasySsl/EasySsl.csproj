@@ -51,6 +51,7 @@
     <Compile Include="RsaPrivateKeyBlob.cs" />
     <Compile Include="PrivateKeyInfo.cs" />
     <Compile Include="SubjectPublicKeyInfo.cs" />
+    <Compile Include="Utils\PrettyBuilder.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="X509AlgorithmIdentifier.cs" />
     <Compile Include="X509ExtensionsList.cs" />
