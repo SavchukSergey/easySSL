@@ -27,14 +27,6 @@ namespace EasySsl {
             return rsa;
         }
 
-        public override byte[] GenerateIdentifier() {
-            var data = Modulus.Concat(Exponent).ToArray();
-            var sha = SHA1.Create();
-            var hash = sha.ComputeHash(data);
-            hash[0] &= 0x7f;
-            return hash;
-        }
-
         protected override string PemName => "RSA PUBLIC KEY";
 
         public override X509AlgorithmIdentifier Algorithm => X509AlgorithmIdentifier.RsaEncryption;

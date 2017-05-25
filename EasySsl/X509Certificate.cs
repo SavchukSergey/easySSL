@@ -6,6 +6,7 @@ using System.Text;
 using Asn1;
 using EasySsl.Extensions;
 using EasySsl.Utils;
+using System.Collections.Generic;
 
 namespace EasySsl {
     public class X509Certificate {
@@ -69,13 +70,17 @@ namespace EasySsl {
             return this;
         }
 
+        public X509Certificate SetAuthorityInfoAccess(AuthorityInfoAccess data) {
+            Tbs.Extensions.SetAuthorityInfoAccess(data);
+            return this;
+        }
+
         public X509Certificate GenerateRsaKey(int keySize = 2048) {
             var privateKey = new RsaPrivateKey(keySize);
             var publicKey = privateKey.CreatePublicKey();
             Tbs.SubjectPublicKeyInfo = publicKey.GetSubjectPublicKeyInfo();
             PrivateKey = privateKey;
-            Tbs.Extensions.SetSubjectKeyIdentifier(publicKey.GenerateIdentifier());
-            return this;
+            return SetSubjectKeyIdentifier();
         }
 
         public X509Certificate SetPrivateKey(X509PrivateKey privateKey) {
@@ -96,6 +101,13 @@ namespace EasySsl {
         public X509Certificate SignWith(X509Certificate authority) {
             Tbs.Extensions.SetAuthorityKeyIdentifier(authority.Tbs.Extensions.GetSubjectKeyIdentifier());
             SignWith(authority.PrivateKey);
+            return this;
+        }
+
+        public X509Certificate AddExtensions(IEnumerable<X509Extension> extensions) {
+            foreach (var ext in extensions) {
+                Tbs.Extensions.Add(ext);
+            }
             return this;
         }
 
@@ -121,17 +133,17 @@ namespace EasySsl {
         }
 
         public X509Certificate SetBasicConstraint(BasicConstraintData data) {
-            var seq = new Asn1Sequence { Nodes = { new Asn1Boolean(data.Authority) } };
-            if (data.PathLengthConstraint.HasValue) {
-                seq.Nodes.Add(new Asn1Integer(data.PathLengthConstraint.Value));
-            }
-            Tbs.Extensions.Add(new X509Extension {
-                Id = Asn1ObjectIdentifier.BasicConstraints,
-                Critical = true,
-                Value = seq.GetBytes()
-            });
-
+            Tbs.Extensions.SetBasicConstraint(data);
             return this;
+        }
+
+        public X509Certificate SetSubjectKeyIdentifier(byte[] data) {
+            Tbs.Extensions.SetSubjectKeyIdentifier(data);
+            return this;
+        }
+
+        public X509Certificate SetSubjectKeyIdentifier() {
+            return SetSubjectKeyIdentifier(Tbs.SubjectPublicKeyInfo.GenerateIdentifier());
         }
 
         public string ToPem() {
@@ -147,7 +159,7 @@ namespace EasySsl {
             var pb = new PrettyBuilder(writer);
             pb.Append($@"Data:
   Version:  v3
-  Serial Number: 0x1
+  Serial Number: {Tbs.SerialNumber.GetBytes().GetHexString()}
   Signature Algorithm: SHA1withRSA - 1.2.840.113549.1.1.5
   Issuer: {Tbs.Issuer}
   Validity: 
@@ -189,7 +201,7 @@ namespace EasySsl {
                     pb.IndentLeft();
                 }
                 pb.IndentLeft();
-                
+
             }
             return writer.GetStringBuilder().ToString();
         }

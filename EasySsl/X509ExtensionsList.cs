@@ -2,6 +2,8 @@
 using System.Linq;
 using Asn1;
 using System;
+using EasySsl.Extensions;
+using System.Text;
 
 namespace EasySsl {
     public class X509ExtensionsList : List<X509Extension> {
@@ -54,6 +56,42 @@ namespace EasySsl {
         private byte[] GetExtensionValue(Asn1ObjectIdentifier id) {
             var ext = this.FirstOrDefault(e => e.Id == id);
             return ext?.Value;
+        }
+
+        public X509ExtensionsList SetBasicConstraint(BasicConstraintData data) {
+            var seq = new Asn1Sequence { Nodes = { new Asn1Boolean(data.Authority) } };
+            if (data.PathLengthConstraint.HasValue) {
+                seq.Nodes.Add(new Asn1Integer(data.PathLengthConstraint.Value));
+            }
+            Add(new X509Extension {
+                Id = Asn1ObjectIdentifier.BasicConstraints,
+                Critical = true,
+                Value = seq.GetBytes()
+            });
+
+            return this;
+        }
+
+        public X509ExtensionsList SetAuthorityInfoAccess(AuthorityInfoAccess data) {
+            var seq = new Asn1Sequence ();
+
+            foreach(var method in data.Methods) {
+                seq.Nodes.Add(new Asn1Sequence {
+                    Nodes = {
+                        new Asn1ObjectIdentifier("1.3.6.1.5.5.7.48.2"),
+                        new Asn1CustomNode(0x06, Asn1TagForm.Primitive, Asn1TagClass.ContextDefined) {
+                            Data = Encoding.UTF8.GetBytes(method.Url)
+                        }
+                    }   
+                });
+            }
+            Add(new X509Extension {
+                Id = new Asn1ObjectIdentifier("1.3.6.1.5.5.7.1.1"),
+                Critical = false,
+                Value = seq.GetBytes()
+            });
+
+            return this;
         }
     }
 }

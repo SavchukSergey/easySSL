@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Asn1;
+using System.Security.Cryptography;
 
 namespace EasySsl {
     public class SubjectPublicKeyInfo {
@@ -8,6 +9,13 @@ namespace EasySsl {
         public X509AlgorithmIdentifier Algorithm { get; set; }
 
         public byte[] SubjectPublicKey { get; set; }
+
+        public byte[] GenerateIdentifier() {
+            var sha = SHA1.Create();
+            var hash = sha.ComputeHash(SubjectPublicKey);
+            hash[0] &= 0x7f;
+            return hash;
+        }
 
         public X509PublicKey CreatePublicKey() {
             if (Algorithm.Id == Asn1ObjectIdentifier.RsaEncryption) {

@@ -8,8 +8,6 @@ namespace EasySsl {
 
         public abstract AsymmetricAlgorithm CreateAsymmetricAlgorithm();
 
-        public abstract byte[] GenerateIdentifier();
-
         public string ToPem() {
             var sb = new StringBuilder();
             sb.AppendLine($"-----BEGIN {PemName}-----");

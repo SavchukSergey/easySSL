@@ -37,7 +37,14 @@ namespace EasySsl {
                     Organization = "EasySSL"
                 },
                 SubjectPublicKeyInfo = intermediatePrivateKey.CreatePublicKey().GetSubjectPublicKeyInfo()
-            };
+            }.SetBasicConstraint(new BasicConstraintData {
+                Authority = true,
+                PathLengthConstraint = 2
+            }).SetAuthorityInfoAccess(new AuthorityInfoAccess {
+                Methods = {
+                    new AuthorityAccessDescription { Url = "http://ssl.vcap.me/ca.crt"}
+                }
+            });
 
             return Sign(csr, root).SetPrivateKey(intermediatePrivateKey);
         }
@@ -51,7 +58,7 @@ namespace EasySsl {
                         NotAfter = DateTimeOffset.UtcNow.AddDays(5)
                     },
                     Subject = new X509Name {
-                        CommonName = "test.vcap.me",
+                        CommonName = "vcap.me",
                         Organization = "Home"
                     }
                 }
@@ -60,6 +67,11 @@ namespace EasySsl {
             .GenerateRsaKey()
             .GenerateSerialNumber()
             .AddSubjectAltNames("vcap.me", "*.vcap.me")
+            .SetAuthorityInfoAccess(new AuthorityInfoAccess {
+                Methods = {
+                    new AuthorityAccessDescription { Url = "http://ssl.vcap.me/intermediate.crt"}
+                }
+            })
             .SignWith(ca);
 
             return cert;
@@ -78,20 +90,18 @@ namespace EasySsl {
                     Subject = csr.Subject,
                     SubjectPublicKeyInfo = csr.SubjectPublicKeyInfo
                 },
-            }.SetIssuer(authority).GenerateSerialNumber().SignWith(authority);
+            }.AddExtensions(csr.RequestedExtensions).SetIssuer(authority).GenerateSerialNumber().SetSubjectKeyIdentifier(csr.SubjectPublicKeyInfo.GenerateIdentifier()).SignWith(authority);
 
         }
 
         public static void Main() {
-            var root = GenerateCaCertificate().Export("ca.cer").ExportPrivateKey("ca.key");
+            var root = GenerateCaCertificate().Export("ca.crt").ExportPrivateKey("ca.key");
             Console.WriteLine($"Root authority has been generated\r\n{Utils.StringUtils.GetHexString(root.SignatureValue)}");
-            Console.ReadKey();
 
-            var intermediateCertificate = GenerateIntermediateCertificate(root).Export("intermediate.cer");
+            var intermediateCertificate = GenerateIntermediateCertificate(root).Export("intermediate.crt");
             Console.WriteLine($"Intermediate authority has been generated\r\n{Utils.StringUtils.GetHexString(intermediateCertificate.SignatureValue)}");
-            Console.ReadKey();
 
-            var endCertificate = GenerateEndCertificate(intermediateCertificate).Export("vcap.me.cer");
+            var endCertificate = GenerateEndCertificate(intermediateCertificate).Export("vcap.me.crt");
             Console.WriteLine($"End certificate has been generated\r\n{Utils.StringUtils.GetHexString(endCertificate.SignatureValue)}");
             Console.ReadKey();
 
