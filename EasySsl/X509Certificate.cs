@@ -50,27 +50,20 @@ namespace EasySsl {
         }
 
         public X509Certificate AddSubjectAltNames(params string[] names) {
-            var ext = Tbs.Extensions.FirstOrDefault(e => e.Id == Asn1ObjectIdentifier.SubjectAltName);
+            var ext = Tbs.Extensions.GetExtension<SubjectAltNameExtension>();
             if (ext == null) {
-                ext = new X509Extension {
-                    Id = Asn1ObjectIdentifier.SubjectAltName
-                };
+                ext = new SubjectAltNameExtension();
                 Tbs.Extensions.Add(ext);
             }
-            var val = ext.Value;
-            var node = val != null && val.Length != 0 ? Asn1Sequence.ReadFrom(val) : new Asn1Sequence();
-
+            
             foreach (var name in names) {
-                node.Nodes.Add(new Asn1CustomNode(2, Asn1TagForm.Primitive, Asn1TagClass.ContextDefined) {
-                    Data = Encoding.UTF8.GetBytes(name)
-                });
+                ext.Names.Add(name);
             }
 
-            ext.Value = node.GetBytes();
             return this;
         }
 
-        public X509Certificate SetAuthorityInfoAccess(AuthorityInfoAccess data) {
+        public X509Certificate SetAuthorityInfoAccess(AuthorityInfoAccessExtension data) {
             Tbs.Extensions.SetAuthorityInfoAccess(data);
             return this;
         }
@@ -132,7 +125,7 @@ namespace EasySsl {
             return SetIssuer(this);
         }
 
-        public X509Certificate SetBasicConstraint(BasicConstraintData data) {
+        public X509Certificate SetBasicConstraint(BasicConstraintExtension data) {
             Tbs.Extensions.SetBasicConstraint(data);
             return this;
         }

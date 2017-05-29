@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using Asn1;
+using EasySsl.Extensions;
 
 namespace EasySsl {
     public class X509TbsCertificate {
@@ -48,7 +49,7 @@ namespace EasySsl {
             if (subnode.Is(Asn1TagClass.ContextDefined, 0x03)) {
                 var extSeq = subnode.Nodes[0];
                 foreach (var extNode in extSeq.Nodes) {
-                    Extensions.Add(new X509Extension((Asn1Sequence)extNode));
+                    Extensions.Add(X509Extension.From((Asn1Sequence)extNode));
                 }
             }
 

@@ -12,12 +12,12 @@ namespace EasySsl {
 
         public X509ExtensionsList RequestedExtensions { get; } = new X509ExtensionsList();
 
-        public CertificationRequestInfo SetBasicConstraint(BasicConstraintData data) {
+        public CertificationRequestInfo SetBasicConstraint(BasicConstraintExtension data) {
             RequestedExtensions.SetBasicConstraint(data);
             return this;
         }
 
-        public CertificationRequestInfo SetAuthorityInfoAccess(AuthorityInfoAccess data) {
+        public CertificationRequestInfo SetAuthorityInfoAccess(AuthorityInfoAccessExtension data) {
             RequestedExtensions.SetAuthorityInfoAccess(data);
             return this;
         }

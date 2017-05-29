@@ -22,7 +22,7 @@ namespace EasySsl {
             .GenerateRsaKey()
             .GenerateSerialNumber()
             .SetIssuerSelf()
-            .SetBasicConstraint(new BasicConstraintData {
+            .SetBasicConstraint(new BasicConstraintExtension {
                 Authority = true,
                 PathLengthConstraint = 3
             })
@@ -37,10 +37,10 @@ namespace EasySsl {
                     Organization = "EasySSL"
                 },
                 SubjectPublicKeyInfo = intermediatePrivateKey.CreatePublicKey().GetSubjectPublicKeyInfo()
-            }.SetBasicConstraint(new BasicConstraintData {
+            }.SetBasicConstraint(new BasicConstraintExtension {
                 Authority = true,
                 PathLengthConstraint = 2
-            }).SetAuthorityInfoAccess(new AuthorityInfoAccess {
+            }).SetAuthorityInfoAccess(new AuthorityInfoAccessExtension {
                 Methods = {
                     new AuthorityAccessDescription { Url = "http://ssl.vcap.me/ca.crt"}
                 }
@@ -67,7 +67,7 @@ namespace EasySsl {
             .GenerateRsaKey()
             .GenerateSerialNumber()
             .AddSubjectAltNames("vcap.me", "*.vcap.me")
-            .SetAuthorityInfoAccess(new AuthorityInfoAccess {
+            .SetAuthorityInfoAccess(new AuthorityInfoAccessExtension {
                 Methods = {
                     new AuthorityAccessDescription { Url = "http://ssl.vcap.me/intermediate.crt"}
                 }

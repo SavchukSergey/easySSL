@@ -33,8 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Asn1, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Asn1.1.0.3\lib\net45\Asn1.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Asn1.1.0.5\lib\net45\Asn1.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,8 +46,12 @@
   <ItemGroup>
     <Compile Include="CertificationRequestInfo.cs" />
     <Compile Include="Extensions\AuthorityAccessDescription.cs" />
-    <Compile Include="Extensions\AuthorityInfoAccess.cs" />
-    <Compile Include="Extensions\BasicConstraintData.cs" />
+    <Compile Include="Extensions\AuthorityInfoAccessExtension.cs" />
+    <Compile Include="Extensions\SubjectAltNameExtension.cs" />
+    <Compile Include="Extensions\SubjectKeyIdentifierExtension.cs" />
+    <Compile Include="Extensions\AuthorityKeyIdentifierExtension.cs" />
+    <Compile Include="Extensions\BasicConstraintExtension.cs" />
+    <Compile Include="Extensions\UnknownExtension.cs" />
     <Compile Include="PrivateKeyFile.cs" />
     <Compile Include="RsaPrivateKeyBlob.cs" />
     <Compile Include="PrivateKeyInfo.cs" />
@@ -62,7 +65,7 @@
     <Compile Include="RsaPrivateKey.cs" />
     <Compile Include="X509TbsCertificate.cs" />
     <Compile Include="X509Version.cs" />
-    <Compile Include="X509Extension.cs" />
+    <Compile Include="Extensions\X509Extension.cs" />
     <Compile Include="X509Name.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
