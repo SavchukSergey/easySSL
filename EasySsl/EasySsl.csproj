@@ -47,6 +47,7 @@
     <Compile Include="CertificationRequestInfo.cs" />
     <Compile Include="Extensions\AuthorityAccessDescription.cs" />
     <Compile Include="Extensions\AuthorityInfoAccessExtension.cs" />
+    <Compile Include="Extensions\CertificatePoliciesExtension.cs" />
     <Compile Include="Extensions\SubjectAltNameExtension.cs" />
     <Compile Include="Extensions\SubjectKeyIdentifierExtension.cs" />
     <Compile Include="Extensions\AuthorityKeyIdentifierExtension.cs" />

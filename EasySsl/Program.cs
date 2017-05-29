@@ -72,6 +72,7 @@ namespace EasySsl {
                     new AuthorityAccessDescription { Url = "http://ssl.vcap.me/intermediate.crt"}
                 }
             })
+            .AddExtensions(new CertificatePoliciesExtension())
             .SignWith(ca);
 
             return cert;

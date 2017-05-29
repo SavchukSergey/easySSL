@@ -55,7 +55,7 @@ namespace EasySsl {
                 ext = new SubjectAltNameExtension();
                 Tbs.Extensions.Add(ext);
             }
-            
+
             foreach (var name in names) {
                 ext.Names.Add(name);
             }
@@ -94,6 +94,13 @@ namespace EasySsl {
         public X509Certificate SignWith(X509Certificate authority) {
             Tbs.Extensions.SetAuthorityKeyIdentifier(authority.Tbs.Extensions.GetSubjectKeyIdentifier());
             SignWith(authority.PrivateKey);
+            return this;
+        }
+
+        public X509Certificate AddExtensions(params X509Extension[] extensions) {
+            foreach (var ext in extensions) {
+                Tbs.Extensions.Add(ext);
+            }
             return this;
         }
 
