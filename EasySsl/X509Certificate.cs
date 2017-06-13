@@ -82,7 +82,7 @@ namespace EasySsl {
         }
 
         public X509Certificate GenerateSerialNumber() {
-            using (var rnd = new RNGCryptoServiceProvider()) {
+            using (var rnd = RandomNumberGenerator.Create()) {
                 var res = new byte[20];
                 rnd.GetBytes(res);
                 res[0] &= 0x7f;
@@ -149,7 +149,7 @@ namespace EasySsl {
         public string ToPem() {
             var asn1 = ToAsn1();
             var data = asn1.GetBytes();
-            var str = Convert.ToBase64String(data, Base64FormattingOptions.InsertLineBreaks);
+            var str = Base64.Convert(data);
             str = "-----BEGIN CERTIFICATE-----\r\n" + str + "\r\n-----END CERTIFICATE-----";
             return str;
         }
@@ -207,31 +207,29 @@ namespace EasySsl {
         }
 
         public X509Certificate Export(string filePath, bool includePrivate = false) {
-            using (var writer = new StreamWriter(filePath)) {
-                var pem = ToPem();
-                writer.Write(pem);
+            using (var file = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None)) {
+                using (var writer = new StreamWriter(file)) {
+                    var pem = ToPem();
+                    writer.Write(pem);
 
-                if (PrivateKey != null && includePrivate) {
-                    writer.WriteLine();
-                    writer.WriteLine();
-                    writer.Write(PrivateKey.ToPem());
+                    if (PrivateKey != null && includePrivate) {
+                        writer.WriteLine();
+                        writer.WriteLine();
+                        writer.Write(PrivateKey.ToPem());
+                    }
+
+                    writer.Flush();
                 }
-
-                writer.Flush();
+                return this;
             }
-            return this;
         }
 
         public X509Certificate ExportPrivateKey(string filePath) {
             if (PrivateKey == null) {
                 throw new InvalidOperationException("This certificate doesn't have private key");
             }
-            var pem = PrivateKey.ToPem();
-            using (var writer = new StreamWriter(filePath)) {
-                writer.Write(pem);
-                writer.Flush();
-                return this;
-            }
+            PrivateKey.Export(filePath);
+            return this;
         }
 
         public void ExportPvk(string filePath) {

@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Asn1;
+using System.IO;
 
 namespace EasySsl {
     public abstract class X509PrivateKey {
@@ -24,7 +25,7 @@ namespace EasySsl {
             sb.AppendLine($"-----BEGIN {PemName}-----");
             var data = ToAsn1();
             var bytes = data.GetBytes();
-            sb.AppendLine(Convert.ToBase64String(bytes, Base64FormattingOptions.InsertLineBreaks));
+            sb.AppendLine(Base64.Convert(bytes));
             sb.AppendLine($"-----END {PemName}-----");
             return sb.ToString();
         }
@@ -36,6 +37,17 @@ namespace EasySsl {
         public abstract Asn1Node ToAsn1();
 
         public abstract byte[] ToPvk();
+
+        public X509PrivateKey Export(string filePath) {
+            var pem = ToPem();
+            using (var file = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None)) {
+                using (var writer = new StreamWriter(file)) {
+                    writer.Write(pem);
+                    writer.Flush();
+                    return this;
+                }
+            }
+        }
 
         public PrivateKeyInfo GetPrivateKeyInfo() {
             return new PrivateKeyInfo {

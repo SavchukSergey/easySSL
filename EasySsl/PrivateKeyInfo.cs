@@ -27,7 +27,7 @@ namespace EasySsl {
             sb.AppendLine("-----BEGIN PRIVATE KEY-----");
             var data = ToAsn1();
             var bytes = data.GetBytes();
-            sb.AppendLine(Convert.ToBase64String(bytes, Base64FormattingOptions.InsertLineBreaks));
+            sb.AppendLine(Base64.Convert(bytes));
             sb.AppendLine("-----END PRIVATE KEY-----");
             return sb.ToString();
         }

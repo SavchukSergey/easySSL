@@ -2,6 +2,7 @@
 using System.IO;
 using Asn1.Utils;
 using EasySsl.Extensions;
+using System.Collections.Generic;
 
 namespace EasySsl {
     class Program {
@@ -95,7 +96,32 @@ namespace EasySsl {
 
         }
 
-        public static void Main() {
+        public static void Help() {
+            Console.WriteLine("usage:");
+            Console.WriteLine("easyssl genrsa [-keySize 2048] -out fileName");
+        }
+
+        public static void GenRsa(EasySslArgs args) {
+            if (string.IsNullOrWhiteSpace(args.OutputPath)) {
+                Help();
+                return;
+            }
+            var privateKey = new RsaPrivateKey(args.KeySize);
+            privateKey.Export(args.OutputPath);
+        }
+
+        public static void Main(string[] rawArgs) {
+            var args = EasySslArgs.Parse(rawArgs);
+            switch (args.Command) {
+                case "genrsa":
+                    GenRsa(args);
+                    break;
+                default:
+                    Help();
+                    return;
+            }
+
+
             var root = GenerateCaCertificate().Export("ca.crt").ExportPrivateKey("ca.key");
             Console.WriteLine($"Root authority has been generated\r\n{Utils.StringUtils.GetHexString(root.SignatureValue)}");
 
@@ -107,9 +133,9 @@ namespace EasySsl {
             Console.ReadKey();
 
 
-            var inputBuffer = new byte[1024];
-            var inputStream = Console.OpenStandardInput(inputBuffer.Length);
-            Console.SetIn(new StreamReader(inputStream, Console.InputEncoding, false, inputBuffer.Length));
+            //var inputBuffer = new byte[1024];
+            //var inputStream = Console.OpenStandardInput(inputBuffer.Length);
+            //Console.SetIn(new StreamReader(inputStream, Console.InputEncoding, false, inputBuffer.Length));
 
             var key = new RsaPrivateKey(2048);
             var publicKey = key.CreatePublicKey();
@@ -150,5 +176,39 @@ namespace EasySsl {
             Console.ReadKey();
         }
 
+    }
+
+    public class EasySslArgs {
+
+        public string Command { get; set; }
+
+        public int KeySize { get; set; } = 2048;
+
+        public string OutputPath { get; set; }
+
+        public static EasySslArgs Parse(IEnumerable<string> args) {
+            var res = new EasySslArgs();
+            var iterator = args.GetEnumerator();
+            while(iterator.MoveNext()) {
+                var arg = iterator.Current;
+                if (arg.StartsWith("-")) {
+                    switch (arg.ToLower()) {
+                        case "-keysize":
+                            iterator.MoveNext();
+                            res.KeySize = int.Parse(iterator.Current);
+                            break;
+                        case "-out":
+                            iterator.MoveNext();
+                            res.OutputPath = iterator.Current;
+                            break;
+                    }
+                } else {
+                    if (string.IsNullOrWhiteSpace(res.Command)) {
+                        res.Command = arg;
+                    }
+                }
+            }
+            return res;
+        }
     }
 }
