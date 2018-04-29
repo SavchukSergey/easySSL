@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using Asn1;
 using EasySsl.Extensions;
 using EasySsl.Utils;

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+  <PropertyGroup Label="Configuration" Condition="'$(TargetFramework)'=='net461'">
     <OutputType>exe</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <Authors>Sergey Savchuk</Authors>
     <Company />
     <Product />
@@ -15,7 +15,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Asn1" Version="1.0.6" />
-    <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
+    <PackageReference Include="Asn1" Version="1.0.8" />
+    <!-- <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" /> -->
   </ItemGroup>
 </Project>
